@@ -41,7 +41,7 @@ Jy2erg_s_cm2 = u.Jy.to(u.erg*u.s**-1*u.cm**-2*u.Hz**-1)
 MJy_sr_degsq2Jy = (u.MJy*u.sr**-1*u.deg**2).to(u.Jy)
 
 #track the version
-__version__ = '0.9.2'
+__version__ = '0.9.8'
 
 class FluxerContainer():
     '''
@@ -1030,15 +1030,16 @@ class FitterContainer():
                  float,float,float,float,float,
                  float,float,float,float,float]
         
-        table_model_info = Table(data=[model_info[:,0],model_info[:,1],model_info[:,2],
-                                       model_info[:,3],model_info[:,4],model_info[:,5],
-                                       model_info[:,6],model_info[:,7],model_info[:,8],
-                                       model_info[:,9],model_info[:,10],model_info[:,11],
-                                       model_info[:,12],model_info[:,13],model_info[:,14],
-                                       model_info[:,15],model_info[:,16],model_info[:,17],
-                                       model_info[:,18],model_info[:,19],model_info[:,20],
-                                       model_info[:,21]],
-                                 names = columns_names, units = units, dtype= dtype)
+        table_model_info = Table(data=[model_info[:,0],model_info[:,1]*units[1],model_info[:,2]*units[2],
+                                       model_info[:,3]*units[3],model_info[:,4]*units[4],model_info[:,5]*units[5],
+                                       model_info[:,6]*units[6],model_info[:,7]*units[7],model_info[:,8]*units[8],
+                                       model_info[:,9]*units[9],model_info[:,10]*units[10],model_info[:,11]*units[11],
+                                       model_info[:,12]*units[12],model_info[:,13]*units[13],model_info[:,14]*units[14],
+                                       model_info[:,15]*units[15],model_info[:,16]*units[16],model_info[:,17]*units[17],
+                                       model_info[:,18]*units[18],model_info[:,19]*units[19],model_info[:,20]*units[20],
+                                       model_info[:,21]*units[21]],
+                                 names = columns_names, dtype=dtype)
+                                 # names = columns_names, units = units, dtype= dtype)
         
         #sort the table by chisq values and filter by unique values
         table_model_info.sort('chisq')
@@ -2413,8 +2414,9 @@ class SedFitter(object):
         dtype = [str,int,float,float,float,float,float,float,float,float,float,float,float,
                  float,float,float,float,float,float,float,float,float,float,float,float,float,
                  float,float,float,float,float,float,float,float,float,float,float,float,float]
-
-        final_average_table = Table(data = data, names = columns_names, units=units, dtype=dtype)
+        
+        final_average_table = Table(data = data, names = columns_names, dtype=dtype)
+        #final_average_table = Table(data = data, names = columns_names, units=units, dtype=dtype)
 
 
         if chisq_cut is not None and core_radius_cut is None:
@@ -2878,7 +2880,7 @@ class ModelPlotter(FitterContainer):
         if title is not None:
             plt.title(title)
         if colorbar:
-            cbar = plt.colorbar(cmap,label=r'$\chi^2$')
+            cbar = plt.colorbar(mappable=cmap, ax=plt.gca(), label=r'$\chi^2$')
             cbar.minorticks_off()
             cbar.set_ticks(np.logspace(np.log10(models['chisq'].min()),
                                        np.log10(models['chisq'].max()),num=5))
@@ -2954,14 +2956,14 @@ class ModelPlotter(FitterContainer):
         ax1.set_xscale('log')
         ax1.set_yscale('log')
 
-        ax1.plot([0,triple_MC_sigma['mcore'][triple_MC_sigma['chisq']==triple_MC_sigma['chisq'].min()]],
-                 [triple_MC_sigma['sigma'][triple_MC_sigma['chisq']==triple_MC_sigma['chisq'].min()],
-                  triple_MC_sigma['sigma'][triple_MC_sigma['chisq']==triple_MC_sigma['chisq'].min()]],
+        ax1.plot([0,triple_MC_sigma['mcore'][triple_MC_sigma['chisq']==triple_MC_sigma['chisq'].min()].value[0]],
+                 [triple_MC_sigma['sigma'][triple_MC_sigma['chisq']==triple_MC_sigma['chisq'].min()].value[0],
+                  triple_MC_sigma['sigma'][triple_MC_sigma['chisq']==triple_MC_sigma['chisq'].min()].value[0]],
                  'k--',alpha=0.1)
 
-        ax1.plot([triple_MC_sigma['mcore'][triple_MC_sigma['chisq']==triple_MC_sigma['chisq'].min()],
-                  triple_MC_sigma['mcore'][triple_MC_sigma['chisq']==triple_MC_sigma['chisq'].min()]],
-                 [0,triple_MC_sigma['sigma'][triple_MC_sigma['chisq']==triple_MC_sigma['chisq'].min()]],
+        ax1.plot([triple_MC_sigma['mcore'][triple_MC_sigma['chisq']==triple_MC_sigma['chisq'].min()].value[0],
+                  triple_MC_sigma['mcore'][triple_MC_sigma['chisq']==triple_MC_sigma['chisq'].min()].value[0]],
+                 [0,triple_MC_sigma['sigma'][triple_MC_sigma['chisq']==triple_MC_sigma['chisq'].min()].value[0]],
                  'k--',alpha=0.1)
 
 
@@ -3008,14 +3010,14 @@ class ModelPlotter(FitterContainer):
         ax2.set_xscale('log')
         ax2.set_yscale('log')
 
-        ax2.plot([0,triple_MC_ms['mcore'][triple_MC_ms['chisq']==triple_MC_ms['chisq'].min()]],
-                 [triple_MC_ms['mstar'][triple_MC_ms['chisq']==triple_MC_ms['chisq'].min()],
-                  triple_MC_ms['mstar'][triple_MC_ms['chisq']==triple_MC_ms['chisq'].min()]],
+        ax2.plot([0,triple_MC_ms['mcore'][triple_MC_ms['chisq']==triple_MC_ms['chisq'].min()].value[0]],
+                 [triple_MC_ms['mstar'][triple_MC_ms['chisq']==triple_MC_ms['chisq'].min()].value[0],
+                  triple_MC_ms['mstar'][triple_MC_ms['chisq']==triple_MC_ms['chisq'].min()].value[0]],
                  'k--',alpha=0.1)
 
-        ax2.plot([triple_MC_ms['mcore'][triple_MC_ms['chisq']==triple_MC_ms['chisq'].min()],
-                  triple_MC_ms['mcore'][triple_MC_ms['chisq']==triple_MC_ms['chisq'].min()]],
-                 [0,triple_MC_ms['mstar'][triple_MC_ms['chisq']==triple_MC_ms['chisq'].min()]],
+        ax2.plot([triple_MC_ms['mcore'][triple_MC_ms['chisq']==triple_MC_ms['chisq'].min()].value[0],
+                  triple_MC_ms['mcore'][triple_MC_ms['chisq']==triple_MC_ms['chisq'].min()].value[0]],
+                 [0,triple_MC_ms['mstar'][triple_MC_ms['chisq']==triple_MC_ms['chisq'].min()].value[0]],
                  'k--',alpha=0.1)
 
         ax2.set_xlim(8.0,600.0)
@@ -3061,14 +3063,14 @@ class ModelPlotter(FitterContainer):
         ax3.set_xscale('log')
         ax3.set_yscale('log')
 
-        ax3.plot([0.0,triple_sigma_ms['sigma'][triple_sigma_ms['chisq']==triple_sigma_ms['chisq'].min()]],
-                 [triple_sigma_ms['mstar'][triple_sigma_ms['chisq']==triple_sigma_ms['chisq'].min()],
-                  triple_sigma_ms['mstar'][triple_sigma_ms['chisq']==triple_sigma_ms['chisq'].min()]],
+        ax3.plot([0.0,triple_sigma_ms['sigma'][triple_sigma_ms['chisq']==triple_sigma_ms['chisq'].min()].value[0]],
+                 [triple_sigma_ms['mstar'][triple_sigma_ms['chisq']==triple_sigma_ms['chisq'].min()].value[0],
+                  triple_sigma_ms['mstar'][triple_sigma_ms['chisq']==triple_sigma_ms['chisq'].min()].value[0]],
                  'k--',alpha=0.1)
 
-        ax3.plot([triple_sigma_ms['sigma'][triple_sigma_ms['chisq']==triple_sigma_ms['chisq'].min()],
-                  triple_sigma_ms['sigma'][triple_sigma_ms['chisq']==triple_sigma_ms['chisq'].min()]],
-                 [0.0,triple_sigma_ms['mstar'][triple_sigma_ms['chisq']==triple_sigma_ms['chisq'].min()]],
+        ax3.plot([triple_sigma_ms['sigma'][triple_sigma_ms['chisq']==triple_sigma_ms['chisq'].min()].value[0],
+                  triple_sigma_ms['sigma'][triple_sigma_ms['chisq']==triple_sigma_ms['chisq'].min()].value[0]],
+                 [0.0,triple_sigma_ms['mstar'][triple_sigma_ms['chisq']==triple_sigma_ms['chisq'].min()].value[0]],
                  'k--',alpha=0.1)
 
 
@@ -3105,7 +3107,7 @@ class ModelPlotter(FitterContainer):
             print('Image saved in ',figname)
             
         plt.show()
-    
+
     def plot3d(self,models,figsize=(8,8),markersize=200,cmap='rainbow_r',title=None,figname=None):
         '''
         3D plot for the SED model results
